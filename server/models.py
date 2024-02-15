@@ -18,3 +18,12 @@ class Activity(db.Model):
 
     def __repr__(self):
         return f"Activity: {self.activity} Type: {self.type}"
+    
+class Routine(db.Model):
+    __tablename__ = "routines"
+
+    id = db.Column(db.Integer(), primary_key=True)
+    dog_id = db.Column(db.Integer(), unique = True)
+    activity_id = db.Column(db.Integer())
+    day = db.Column(db.String())
+    comment = db.Column(db.String())

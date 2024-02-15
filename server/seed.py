@@ -11,39 +11,23 @@ if __name__ == "__main__":
 
     print("Seeding dogs table...")
 
-    beck = Dog(
-      name = "Beck"
-    )
-
-    bowie = Dog(
-      name = "Bowie"
-    )
-
-    sen = Dog(
-      name = "Sen"
-    )
-
-    montana = Dog(
-      name = "Montana"
-    )
-
-    willow = Dog(
-      name = "Willow"
-    )
-
-    bats = Dog(
-      name = "Bats"
-    )
-
-
-
+    beck = Dog(name = "Beck")
     db.session.add(beck)
-    db.session.add(bowie)
-    db.session.add(sen)
-    db.session.add(montana)
-    db.session.add(willow)
-    db.session.add(bats)
 
+    bowie = Dog(name = "Bowie")
+    db.session.add(bowie)
+
+    sen = Dog(name = "Sen")
+    db.session.add(sen)
+
+    montana = Dog(name = "Montana")
+    db.session.add(montana)
+
+    willow = Dog(name = "Willow")
+    db.session.add(willow)
+
+    bats = Dog(name = "Bats")
+    db.session.add(bats)
 
     print("Seeding activities table...")
 
@@ -127,3 +111,5 @@ if __name__ == "__main__":
     db.session.add(nose_work)
 
     db.session.commit()
+
+    
