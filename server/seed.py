@@ -112,4 +112,12 @@ if __name__ == "__main__":
 
     db.session.commit()
 
-    
+    r1 = Routine(
+      dog_id = 6,
+      activity_id = 10,
+      day = "Monday",
+      comment = "learning sit pretty!"
+    )
+
+    db.session.add(r1)
+    db.session.commit()
