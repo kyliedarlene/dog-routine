@@ -1,10 +1,6 @@
 from config import app, migrate
-
 from models import db
-
 from helpers import *
-
-# Run app
 
 if __name__ == "__main__":
   with app.app_context():

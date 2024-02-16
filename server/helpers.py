@@ -8,6 +8,10 @@ def get_all_dogs():
 def get_all_activities():
     return db.session.query(Activity).all()
 
+def get_activity_types():
+  activities = get_all_activities()
+  return sorted(set([activity.type for activity in activities]))
+
 def get_activities_by_type(type):
     return db.session.query(Activity).filter(Activity.type == type).all()
 
@@ -68,8 +72,7 @@ def add_routines_by_type(type, dog, day):
       db.session.commit()
 
 def create_day(dog, day):
-  activities = get_all_activities()
-  types = sorted(set([activity.type for activity in activities]))
+  types = get_activity_types()
   for type in types:
     add_routines_by_type(type, dog, day)
 
