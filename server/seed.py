@@ -8,6 +8,7 @@ if __name__ == "__main__":
 
     Dog.query.delete()
     Activity.query.delete()
+    Routine.query.delete()
 
     print("Seeding dogs table...")
 

@@ -23,7 +23,7 @@ class Routine(db.Model):
     __tablename__ = "routines"
 
     id = db.Column(db.Integer(), primary_key=True)
-    dog_id = db.Column(db.Integer(), unique = True)
+    dog_id = db.Column(db.Integer())
     activity_id = db.Column(db.Integer())
     day = db.Column(db.String())
     comment = db.Column(db.String())
