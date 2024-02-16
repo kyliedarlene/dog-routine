@@ -25,12 +25,30 @@ def display_all_dogs():
   for dog in dogs:
     print(dog)
 
-def create_new_pet():
-  pet_name = get_input("What is the name of your pet? ")
-  new_pet = Dog(name = pet_name)
-  db.session.add(new_pet)
+def create_new_dog():
+  dog_name = get_input("What is the name of your dog? ")
+  new_dog = Dog(name = dog_name)
+  db.session.add(new_dog)
   db.session.commit()
-  return new_pet.name
+  return new_dog
+
+def create_day(dog, day):
+  type = "GROOMING"
+  print(f"Please add any {type} activities that you'll be doing with {dog.name.upper()} on {day}.")
+  print("When you're finished, press C to continue.")
+  activities = get_activities_by_type(type)
+  for activity in activities:
+    print(f"{activity.id} {activity.activity}")
+  selection = input("Add an activity: ")
+  new_routine = Routine(
+    dog_id = dog.id,
+    activity_id = selection,
+    day = day,
+     comment = ""
+  )
+  db.session.add(new_routine)
+  db.session.commit()
+
 
 if __name__ == "__main__":
   with app.app_context():
@@ -42,7 +60,8 @@ if __name__ == "__main__":
     if choice == '1':
       print(choice)
     elif choice == '2':
-      pet = create_new_pet()
-      print(f"Great! Let's create a new routine for {pet}.")
+      dog = create_new_dog()
+      print(f"Great! Let's create a new routine for {dog.name.upper()}.")
+      create_day(dog, "Monday")
     else:
       exit()
