@@ -278,5 +278,4 @@ if __name__ == "__main__":
     migrate.init_app(app, db)
     
     print("Welcome to DOG ROUTINE!\n")
-    # main()
-    view_and_manage_routines()
+    main()
