@@ -7,6 +7,7 @@ from tabulate import tabulate
 ### MENUS
 
 def display_main_menu():
+  print("OPTIONS")
   print("1 View and manage routines")
   print("2 Create a new routine")
   print("3 Exit")
@@ -41,15 +42,15 @@ def view_and_manage_routines():
     type = input("Please enter the type of activity you would like to see: ")
     display_week_filtered_by_activity_type(dog, type)
   elif choice == '3':
-    print("Feature coming soon!")
+    print("View weekly summary: coming soon!")
 
 def update_routine():
   update_routine_menu()
   choice = get_choice()
   if choice == '1':
-    print("Add an activity (NOT BUILT)")
+    print("Add an activity: coming soon!")
   elif choice == '2':
-    print("Delete an activity (NOT BUILT)")
+    delete_routine()
   elif choice == '3':
     update_comment()
 
@@ -149,12 +150,24 @@ def assign_weekly_routine(dog):
 ### UPDATE
       
 def update_comment():
-  print("Please enter the ID of the activity you would like to update:")
-  choice = get_choice()
+  choice = input("Please enter the ID of the activity you would like to update: ")
   selected_activity = db.session.get(Routine, choice)
   new_comment = input(f"Enter your new comment for {selected_activity.activity.activity}: ")
   selected_activity.comment = new_comment
   db.session.commit()
+
+### DELETE
+  
+def delete_routine():
+  choice = input("Please enter the number of the activity you would like to delete: ")
+  selected_activity = db.session.get(Routine, choice)
+  choice = input(f"Are you sure you want to delete {selected_activity.activity.activity}? This cannot be undone. (Y/N): ")
+  if choice == 'N':
+    return
+  elif choice == 'Y':
+    db.session.delete(selected_activity)
+    db.session.commit()
+    print(f"{selected_activity.activity.activity} has been deleted.")
 
 #### RUN APP
 
