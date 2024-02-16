@@ -45,6 +45,8 @@ def add_routines_by_type(type, dog, day):
   selection = None
   while selection != "C":
     selection = input("Add an activity: ")
+    if selection == "C":
+      break
     new_routine = Routine(
       dog_id = dog.id,
       activity_id = selection,
@@ -60,6 +62,11 @@ def create_day(dog, day):
   for type in types:
     add_routines_by_type(type, dog, day)
 
+def create_routine(dog):
+  week = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+  for day in week:
+    create_day(dog, day)
+
 # Run app
 
 if __name__ == "__main__":
@@ -68,8 +75,8 @@ if __name__ == "__main__":
     print("ROUTINE BUBBA")
     print("Hello!\n")
 
-    dog = db.session.query(Dog).filter(Dog.name == "Montana").first()
-    create_day(dog, "Monday")
+    dog = db.session.query(Dog).filter(Dog.name == "Willow").first()
+    create_routine(dog)
     # display_main_menu()
     # choice = get_choice()
     # if choice == '1':
