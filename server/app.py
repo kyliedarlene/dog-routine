@@ -37,15 +37,15 @@ def create_new_dog():
   return new_dog
 
 def add_routines_by_type(type, dog, day):
-  print(f"Please add any {type} activities that you'll be doing with {dog.name.upper()} on {day}.")
-  print("When you're finished, press C to continue.")
+  print(f"Please add any {type} activities that you'll be doing with {dog.name.upper()} on {day.upper()}.")
+  print("When you're finished, press ENTER to continue.")
   activities = get_activities_by_type(type)
   for activity in activities:
     print(f"{activity.id} {activity.activity}")
   selection = None
-  while selection != "C":
+  while selection != "":
     selection = input("Add an activity: ")
-    if selection == "C":
+    if selection == "":
       break
     new_routine = Routine(
       dog_id = dog.id,
@@ -63,9 +63,18 @@ def create_day(dog, day):
     add_routines_by_type(type, dog, day)
 
 def create_routine(dog):
-  week = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
-  for day in week:
-    create_day(dog, day)
+  create_day(dog, "Monday")
+  print(f"{dog.name}'s MONDAY routine is complete!")
+  print(f"Would you like to model the rest of the week after {dog.name}'s MONDAY routine? You'll be able to fine-tune each day's activities later.")
+  print(f"1 Autofill {dog.name}'s weekly schedule")
+  print(f"2 Fill out each day manually")
+  selection = get_choice()
+  print(f"Selection: {selection}")
+  if selection == '1':
+    print("Autofill")
+  elif selection == '2':
+    for day in ["Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]:
+      create_day(dog, day)
 
 # Run app
 
@@ -75,7 +84,7 @@ if __name__ == "__main__":
     print("ROUTINE BUBBA")
     print("Hello!\n")
 
-    dog = db.session.query(Dog).filter(Dog.name == "Willow").first()
+    dog = db.session.query(Dog).filter(Dog.name == "Sen").first()
     create_routine(dog)
     # display_main_menu()
     # choice = get_choice()
