@@ -7,23 +7,24 @@ from tabulate import tabulate
 ### MENUS
 
 def display_main_menu():
-  print("OPTIONS")
+  print("")
   print("1 View and manage routines")
   print("2 Create a new routine")
-  print("3 Exit")
+  print("3 Exit\n")
 
 def view_and_manage_routines_menu():
-  print("OPTIONS")
+  print("")
   print("1 Update routine")
   print("2 Filter by activity type")
   print("3 View weekly summary")
-  print("4 Return to Main Menu")
+  print("4 Return to Main Menu\n")
 
 def update_routine_menu():
-  print("OPTIONS")
+  print("")
   print("1 Add an activity")
   print("2 Delete an activity")
   print("3 Add or update a comment")
+  print("4 Return to routines\n")
 
 def get_choice():
   return input("Please enter your selection: ")
@@ -52,11 +53,14 @@ def main():
 
 def select_routine_by_dog():
   # print names of all dogs
+  print("")
   display_all_dogs()
+  print("")
   # get dog selection
   dog_count = len(get_all_dogs())
   while True:
     dog_id = input("Please enter the number of the dog whose routine you would like to see: ")
+    print("")
     try:
       dog_id = int(dog_id)
     except:
@@ -92,8 +96,8 @@ def view_and_manage_routines():
           for type in types:
             print(type)
         else:
+          display_week_filtered_by_activity_type(dog, type)
           break
-      display_week_filtered_by_activity_type(dog, type)
       view_and_manage_routines_menu()
     elif choice == '3':
       # view weekly summary
@@ -117,9 +121,12 @@ def update_routine():
   elif choice == '3':
     # add or update a comment
     update_comment()
+  elif choice == '4':
+    # return to view and manage routines
+    view_and_manage_routines()
 
 def exit():
-  print("Enjoy your week with your pups!")
+  print(f"\nEnjoy your week with your pups!")
 
 ### READ 
   
@@ -140,21 +147,23 @@ def display_activities_by_type(type):
 ## routines
     
 def display_day(dog, day):
-  print(day.upper())
+  print(f"{day.upper()}\n")
   table = [
     [routine.id, routine.activity.type, routine.activity.activity, routine.comment] 
     for routine in dog.routines 
     if routine.day == day
   ]
   print(tabulate(table, headers=["ID", "Type", "Activity", "Comment"], tablefmt="double-grid"))
+  print("")
 
 def display_week(dog):
-  print(f"{dog.name.upper()}'S weekly routine!")
+  print(f"\n{dog.name.upper()}'S weekly routine!")
+  print("")
   for day in ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]:
     display_day(dog, day)
 
 def display_week_filtered_by_activity_type(dog, type):
-  print(f"{dog.name.upper()}'S {type.upper()} routine!")
+  print(f"\n{dog.name.upper()}'S {type.upper()} routine!")
   table = [
     [routine.day, routine.activity.activity, routine.comment] 
     for routine in dog.routines 
@@ -170,6 +179,7 @@ def create_new_dog():
   dog_name = input("What is the name of your dog? ")
   new_dog = Dog(name = dog_name)
   db.session.add(new_dog)
+
   db.session.commit()
   return new_dog
 
@@ -188,12 +198,12 @@ def create_new_routine(dog, activity, day):
 def assign_daily_routine(dog, day):
   types = get_activity_types()
   for type in types:
-    print(f"Please add any {type} activities that you'll be doing with {dog.name.upper()} on {day.upper()}.")
+    print(f"\nPlease add any {type} activities that you'll be doing with {dog.name.upper()} on {day.upper()}.")
     print("When you're finished, press ENTER to continue.")
     display_activities_by_type(type)
     selection = None
     while selection != "":
-      selection = input("Add an activity: ")
+      selection = input("Selection: ")
       if selection == "":
         break
       else:
@@ -207,17 +217,25 @@ def autofill_weekly_routine(dog):
 
 def assign_weekly_routine(dog):
   assign_daily_routine(dog, "Monday")
-  print(f"{dog.name}'s MONDAY routine is complete!")
+  print(f"\n{dog.name}'s MONDAY routine is complete!")
   print(f"Would you like to model the rest of the week after {dog.name}'s MONDAY routine? You'll be able to fine-tune each day's activities later.")
   print(f"1 Autofill {dog.name}'s weekly schedule")
   print(f"2 Fill out each day manually")
-  selection = get_choice()
-  if selection == '1':
-    autofill_weekly_routine(dog)
-    # display_week(dog)
-  elif selection == '2':
-    for day in ["Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]:
-      assign_daily_routine(dog, day)
+  while True:
+    selection = get_choice()
+    if selection == '1':
+      autofill_weekly_routine(dog)
+      display_week(dog)
+      main()
+      break
+    elif selection == '2':
+      for day in ["Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]:
+        assign_daily_routine(dog, day)
+      display_week(dog)
+      main()
+      break
+    else:
+      print("Selection must be 1 or 2.")
 
 ### UPDATE
       
@@ -233,13 +251,19 @@ def update_comment():
 def delete_routine():
   choice = input("Please enter the number of the activity you would like to delete: ")
   selected_activity = db.session.get(Routine, choice)
-  choice = input(f"Are you sure you want to delete {selected_activity.activity.activity} in {selected_activity.dog.name.upper()}'S {selected_activity.day} schedule? This cannot be undone. (Y/N): ")
-  if choice == 'N':
-    return
-  elif choice == 'Y':
-    db.session.delete(selected_activity)
-    db.session.commit()
-    print(f"{selected_activity.activity.activity} has been deleted.")
+  while True:
+    choice = input(f"Are you sure you want to delete {selected_activity.activity.activity} in {selected_activity.dog.name.upper()}'S {selected_activity.day} schedule? This cannot be undone. (Y/N): ")
+    if choice.upper() == 'N':
+      update_routine()
+      break
+    elif choice.upper() == 'Y':
+      db.session.delete(selected_activity)
+      db.session.commit()
+      print(f"{selected_activity.activity.activity} has been deleted.")
+      update_routine()
+      break
+    else:
+      print("Selection must be Y or N.")
 
 #### RUN APP
 
@@ -247,7 +271,5 @@ if __name__ == "__main__":
   with app.app_context():
     migrate.init_app(app, db)
     
-    print("ROUTINE BUBBA")
-    print("Hello!\n")    
-    
+    print("Welcome to DOG ROUTINE!\n")
     main()
