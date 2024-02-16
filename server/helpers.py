@@ -16,5 +16,5 @@ def get_activity_types():
 def get_activities_by_type(type):
     return db.session.query(Activity).filter(Activity.type == type).all()
 
-def get_routine_by_pet(dog_id):
+def get_routine_by_dog(dog_id):
     return db.session.query(Routine).filter(Routine.dog_id == dog_id).all()

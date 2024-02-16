@@ -17,6 +17,7 @@ def view_and_manage_routines_menu():
   print("1 Update routine")
   print("2 Filter by activity type")
   print("3 View weekly summary")
+  print("4 Return to Main Menu")
 
 def update_routine_menu():
   print("OPTIONS")
@@ -27,35 +28,98 @@ def update_routine_menu():
 def get_choice():
   return input("Please enter your selection: ")
 
-### LOOPS & PATHS
+### LOOPS
   
-def view_and_manage_routines():
+def main():
+  display_main_menu()
+  while True:
+    choice = get_choice()
+    if choice == '1':
+      # view and manage routines
+      view_and_manage_routines()
+      break
+    elif choice == '2':
+      # create a new routine
+      dog = create_new_dog()
+      print(f"Great! Let's create a new routine for {dog.name.upper()}.")
+      assign_weekly_routine(dog)
+      break
+    elif choice == '3':
+      exit()
+      break
+    else:
+      print("Selection must be a number between 1 and 3.")
+
+def select_routine_by_dog():
+  # print names of all dogs
   display_all_dogs()
-  dog_id = input("Please enter the number of the dog whose routine you would like to see: ")
-  dog = get_dog_by_id(dog_id)
+  # get dog selection
+  dog_count = len(get_all_dogs())
+  while True:
+    dog_id = input("Please enter the number of the dog whose routine you would like to see: ")
+    try:
+      dog_id = int(dog_id)
+    except:
+      print(f"Selection must be a number between 1 and {dog_count}.")
+      continue
+    if 1 <= int(dog_id) <= dog_count:
+      dog = get_dog_by_id(dog_id)
+      break
+    else:
+      print(f"Selection must be a number between 1 and {dog_count}.")
+  # display selected dog's weekly routine
   display_week(dog)
+  return dog
+
+def view_and_manage_routines():
+  dog = select_routine_by_dog()
+  # print submenu: View and manage routines
   view_and_manage_routines_menu()
-  choice = get_choice()
-  if choice == '1':
-    update_routine()
-  elif choice == '2':
-    type = input("Please enter the type of activity you would like to see: ")
-    display_week_filtered_by_activity_type(dog, type)
-  elif choice == '3':
-    print("View weekly summary: coming soon!")
+  # get menu selection
+  while True:
+    choice = get_choice()
+    if choice == '1':
+      # update routine
+      update_routine()
+      break
+    elif choice == '2':
+      # filter by activity type
+      while True:
+        type = input("Please enter the type of activity you would like to see: ")
+        types = get_activity_types()
+        if type.upper() not in types:
+          print(f"Selection must be one of the following types:")
+          for type in types:
+            print(type)
+        else:
+          break
+      display_week_filtered_by_activity_type(dog, type)
+      view_and_manage_routines_menu()
+    elif choice == '3':
+      # view weekly summary
+      print("View weekly summary: coming soon!")
+    elif choice == '4':
+      # return to main menu
+      main()
+      break
+    else:
+      print("Selection must be a number between 1 and 4.")
 
 def update_routine():
   update_routine_menu()
   choice = get_choice()
   if choice == '1':
+    # add an activity
     print("Add an activity: coming soon!")
   elif choice == '2':
+    # delete an activity
     delete_routine()
   elif choice == '3':
+    # add or update a comment
     update_comment()
 
 def exit():
-  print("Enjoy your day with your Bubba(s)!")
+  print("Enjoy your week with your pups!")
 
 ### READ 
   
@@ -85,10 +149,12 @@ def display_day(dog, day):
   print(tabulate(table, headers=["ID", "Type", "Activity", "Comment"], tablefmt="double-grid"))
 
 def display_week(dog):
+  print(f"{dog.name.upper()}'S weekly routine!")
   for day in ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]:
     display_day(dog, day)
 
 def display_week_filtered_by_activity_type(dog, type):
+  print(f"{dog.name.upper()}'S {type.upper()} routine!")
   table = [
     [routine.day, routine.activity.activity, routine.comment] 
     for routine in dog.routines 
@@ -133,6 +199,12 @@ def assign_daily_routine(dog, day):
       else:
         create_new_routine(dog, selection, day)
 
+def autofill_weekly_routine(dog):
+  model_day = get_routine_by_dog(dog.id)
+  for day in ["Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]:
+    for routine in model_day:
+      create_new_routine(dog, routine.activity_id, day)
+
 def assign_weekly_routine(dog):
   assign_daily_routine(dog, "Monday")
   print(f"{dog.name}'s MONDAY routine is complete!")
@@ -140,9 +212,9 @@ def assign_weekly_routine(dog):
   print(f"1 Autofill {dog.name}'s weekly schedule")
   print(f"2 Fill out each day manually")
   selection = get_choice()
-  print(f"Selection: {selection}")
   if selection == '1':
-    print("Autofill")
+    autofill_weekly_routine(dog)
+    # display_week(dog)
   elif selection == '2':
     for day in ["Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]:
       assign_daily_routine(dog, day)
@@ -161,7 +233,7 @@ def update_comment():
 def delete_routine():
   choice = input("Please enter the number of the activity you would like to delete: ")
   selected_activity = db.session.get(Routine, choice)
-  choice = input(f"Are you sure you want to delete {selected_activity.activity.activity}? This cannot be undone. (Y/N): ")
+  choice = input(f"Are you sure you want to delete {selected_activity.activity.activity} in {selected_activity.dog.name.upper()}'S {selected_activity.day} schedule? This cannot be undone. (Y/N): ")
   if choice == 'N':
     return
   elif choice == 'Y':
@@ -174,16 +246,8 @@ def delete_routine():
 if __name__ == "__main__":
   with app.app_context():
     migrate.init_app(app, db)
+    
     print("ROUTINE BUBBA")
     print("Hello!\n")    
     
-    display_main_menu()
-    choice = get_choice()
-    if choice == '1':
-      view_and_manage_routines()
-    elif choice == '2':
-      dog = create_new_dog()
-      print(f"Great! Let's create a new routine for {dog.name.upper()}.")
-      assign_weekly_routine(dog)
-    else:
-      exit()
+    main()
