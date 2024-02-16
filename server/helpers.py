@@ -3,6 +3,9 @@ from models import *
 def get_all_dogs():
     return db.session.query(Dog).all()
 
+def get_dog_by_id(id):
+    return db.session.get(Dog, id)
+
 def get_all_activities():
     return db.session.query(Activity).all()
 
