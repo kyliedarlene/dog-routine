@@ -111,19 +111,25 @@ def view_and_manage_routines():
 
 def update_routine():
   update_routine_menu()
-  choice = get_choice()
-  if choice == '1':
-    # add an activity
-    print("Add an activity: coming soon!")
-  elif choice == '2':
-    # delete an activity
-    delete_routine()
-  elif choice == '3':
-    # add or update a comment
-    update_comment()
-  elif choice == '4':
-    # return to view and manage routines
-    view_and_manage_routines()
+  while True:
+    choice = get_choice()
+    if choice == '1':
+      # add an activity
+      print("Add an activity: coming soon!\n")
+    elif choice == '2':
+      # delete an activity
+      delete_routine()
+      break
+    elif choice == '3':
+      # add or update a comment
+      update_comment()
+      break
+    elif choice == '4':
+      # return to view and manage routines
+      break
+    else: 
+      print("Selection must be a number between 1 and 4.")
+  view_and_manage_routines()
 
 def exit():
   print(f"\nEnjoy your week with your pups!")
@@ -165,11 +171,11 @@ def display_week(dog):
 def display_week_filtered_by_activity_type(dog, type):
   print(f"\n{dog.name.upper()}'S {type.upper()} routine!")
   table = [
-    [routine.day, routine.activity.activity, routine.comment] 
+    [routine.id, routine.day, routine.activity.activity, routine.comment] 
     for routine in dog.routines 
-    if routine.activity.type == type
+    if routine.activity.type == type.upper()
   ]
-  print(tabulate(table, headers=["Day", "Activity", "Comment"], tablefmt="double-grid"))
+  print(tabulate(table, headers=["ID", "Day", "Activity", "Comment"], tablefmt="double-grid"))
 
 ### CREATE
 
@@ -272,4 +278,5 @@ if __name__ == "__main__":
     migrate.init_app(app, db)
     
     print("Welcome to DOG ROUTINE!\n")
-    main()
+    # main()
+    view_and_manage_routines()
