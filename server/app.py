@@ -2,10 +2,41 @@ from config import app, migrate
 from models import db
 from helpers import *
 
+from tabulate import tabulate 
+
 def display_main_menu():
   print("1 View routine(s)")
   print("2 Create a new routine")
   print("3 Exit")
+
+def display_routine_menu():
+  print("OPTIONS")
+  print("1 Update routine")
+  print("2 Filter by activity type")
+  print("3 View weekly summary")
+
+def update_routine_menu():
+  print("OPTIONS")
+  print("1 Add an activity")
+  print("2 Delete an activity")
+  print("3 Add or update a comment")
+
+def display_routines():
+  dogs = get_all_dogs()
+  for dog in dogs:
+    print(f"{dog.id} {dog.name}")
+  dog_id = input("Please enter the number of the dog you would like to see: ")
+  dog = db.session.get(Dog, dog_id)
+  display_week(dog)
+  display_routine_menu()
+  choice = get_choice()
+  if choice == '1':
+    update_comment()
+  elif choice == '2':
+    type = input("Please enter the type of activity you would like to see: ")
+    display_week_filtered_by_activity_type(dog, type)
+  elif choice == '3':
+    print("Feature coming soon!")
 
 # inputs
 
@@ -25,8 +56,18 @@ def display_all_dogs():
   for dog in dogs:
     print(dog)
 
-def display_routine(dog):
-  pass
+def display_day(dog, day):
+  print(day.upper())
+  table = [[routine.id, routine.activity.type, routine.activity.activity, routine.comment] for routine in dog.routines if routine.day == day]
+  print(tabulate(table, headers=["ID", "Type", "Activity", "Comment"], tablefmt="double-grid"))
+
+def display_week(dog):
+  for day in ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]:
+    display_day(dog, day)
+
+def display_week_filtered_by_activity_type(dog, type):
+  table = [[routine.day, routine.activity.activity, routine.comment] for routine in dog.routines if routine.activity.type == type]
+  print(tabulate(table, headers=["Day", "Activity", "Comment"], tablefmt="double-grid"))
 
 # Create
 
@@ -76,23 +117,30 @@ def create_routine(dog):
   elif selection == '2':
     for day in ["Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]:
       create_day(dog, day)
+
+# update
       
+def update_comment():
+  print("Please enter the ID of the activity you would like to update:")
+  choice = get_choice()
+  selected_activity = db.session.get(Routine, choice)
+  new_comment = input(f"Enter your new comment for {selected_activity.activity.activity}: ")
+  selected_activity.comment = new_comment
+  db.session.commit()
+
 if __name__ == "__main__":
   with app.app_context():
     migrate.init_app(app, db)
     print("ROUTINE BUBBA")
-    print("Hello!\n")
-
-    dog = db.session.query(Dog).filter(Dog.name == "Bats").first()
-    display_routine(dog)
-
-    # display_main_menu()
-    # choice = get_choice()
-    # if choice == '1':
-    #   print(choice)
-    # elif choice == '2':
-    #   dog = create_new_dog()
-    #   print(f"Great! Let's create a new routine for {dog.name.upper()}.")
-    #   create_routine(dog)
-    # else:
-    #   exit()
+    print("Hello!\n")    
+    
+    display_main_menu()
+    choice = get_choice()
+    if choice == '1':
+      display_routines()
+    elif choice == '2':
+      dog = create_new_dog()
+      print(f"Great! Let's create a new routine for {dog.name.upper()}.")
+      create_routine(dog)
+    else:
+      exit()

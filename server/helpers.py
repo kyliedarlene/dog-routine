@@ -1,7 +1,5 @@
 from models import *
 
-# query
-
 def get_all_dogs():
     return db.session.query(Dog).all()
 
@@ -14,3 +12,6 @@ def get_activity_types():
 
 def get_activities_by_type(type):
     return db.session.query(Activity).filter(Activity.type == type).all()
+
+def get_routine_by_pet(dog_id):
+    return db.session.query(Routine).filter(Routine.dog_id == dog_id).all()
